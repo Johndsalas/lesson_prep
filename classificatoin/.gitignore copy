@@ -1,0 +1,17 @@
+.ipynb_checkpoints/
+*.Rhistory
+env.py
+__pycache__
+.DS_Store
+Thumbs.db
+.vscode/
+*.csv
+*.json
+*.xlsx
+*.png
+*.txt
+*.dbc
+*.zip
+*.pbix
+cache
+venv
