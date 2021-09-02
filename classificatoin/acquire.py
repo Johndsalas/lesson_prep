@@ -12,9 +12,8 @@ def get_connection(db, user=username, host=host, password=password):
     It takes in a string name of a database as an argument.
     '''
     return f'mysql+pymysql://{user}:{password}@{host}/{db}'
-    
-    
-    
+
+
 def new_titanic_data():
     '''
     This function reads the titanic data from the Codeup db into a df,
@@ -63,7 +62,7 @@ def new_iris_data():
                     sepal_length,
                     sepal_width,
                     petal_length,
-                    petal_width
+                    petal_width,
                 FROM measurements
                 JOIN species USING(species_id)
                 """
