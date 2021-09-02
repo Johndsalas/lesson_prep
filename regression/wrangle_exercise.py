@@ -1,4 +1,4 @@
-'''Imports for wrangle exercises in regression'''
+##################################################Wrangle.py###################################################
 
 import pandas as pd
 
@@ -26,7 +26,18 @@ def acquire_zillow():
     WHERE propertylandusedesc IN ("Single Family Residential",                       
                                   "Inferred Single Family Residential")"""
 
-    return pd.read_sql(query, url)
+    # get dataframe of data
+    df = pd.read_sql(query, url)
+    
+    
+    # renaming column names to one's I like better
+    df = df.rename(columns = {'bedroomcnt':'bedrooms', 
+                              'bathroomcnt':'bathrooms', 
+                              'calculatedfinishedsquarefeet':'area',
+                              'taxvaluedollarcnt':'tax_value', 
+                              'yearbuilt':'year_built',
+                              'taxamount':'tax_amount'})
+    return df
 
 #**************************************************Distributions*******************************************************
 
@@ -35,7 +46,7 @@ def get_hist(df):
     plt.figure(figsize=(16, 3))
 
     # List of columns
-    cols = [col for col in df.columns if col != 'fips']
+    cols = [col for col in df.columns if col not in ['fips', 'year_built']]
 
     for i, col in enumerate(cols):
 
@@ -53,41 +64,29 @@ def get_hist(df):
 
         # Hide gridlines.
         plt.grid(False)
-
-        # fix layout
-        plt.tight_layout()
         
         
 def get_box(df):
     
     plt.figure(figsize=(8,4))
 
-    sns.boxplot(data=df.drop(columns=['fips']))
-
-    # fix layout
-    plt.tight_layout()
+    sns.boxplot(data=df.drop(columns=['fips', 'year_built']))
+    plt.show()
         
 #**************************************************Prepare*******************************************************
 
 def prepare_zillow(df):
     
-    # drop rows that are nulls in bedroomcnt, bathroomcnt, taxvaluedollarcnt
-    df = df.dropna(subset = ['bedroomcnt','bathroomcnt', 'taxvaluedollarcnt', 'yearbuilt'])
+    # drop rows that are nulls 
+    df = df.dropna(subset = ['bedrooms','bathrooms', 'year_built', 'tax_value'])
     
     # drop taxamount
-    df = df.drop(columns = 'taxamount')
+    df = df.drop(columns = 'tax_amount')
     
     # converting column datatypes
-    df.fips = df.fips.astype(object)
-    df.yearbuilt = df.yearbuilt.astype(object)
-    df.bedroomcnt = df.bedroomcnt.astype(int)
-    
-    # renaming column names to one's I like better
-    df = df.rename(columns = {'bedroomcnt':'bedrooms', 
-                              'bathroomcnt':'bathrooms', 
-                              'calculatedfinishedsquarefeet':'area',
-                              'taxvaluedollarcnt':'tax_value', 
-                              'yearbuilt':'year_built'})
+    df.fips = df.fips.astype(str)
+    df.year_built = df.year_built.astype(str)
+    df.bedrooms = df.bedrooms.astype(int)
     
     # train/validate/test split
     train_validate, test = train_test_split(df, test_size=.2, random_state=123)
@@ -110,4 +109,3 @@ def wrangle_zillow():
     
     train, validate, test = prepare_zillow(acquire_zillow())
     
-    return train, validate, test
